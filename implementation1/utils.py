@@ -1,10 +1,12 @@
 import numpy as np
 
 def readFromFile( fileName ):
-    lenRow = len(fileName[0]) -1
 
-    y = fileName[:,lenRow]
-    x = fileName[:, 0:lenRow]
+    data = np.genfromtxt(fileName, dtype=np.float)
+    lenRow = len(data[0]) -1
+
+    y = data[:,lenRow]
+    x = data[:, 0:lenRow]
 
     return (x, y)
 
