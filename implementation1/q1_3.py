@@ -11,7 +11,9 @@ print("Running tests with the removed dummy data")
 
 #Training Data
 
+
 (x,y) = u.readFromFile(sys.argv[1])
+
 
 #calculate learned weight
 w = u.calcLearnedWeight(x, y)

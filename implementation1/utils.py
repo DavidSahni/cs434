@@ -1,6 +1,7 @@
 import numpy as np
 
 def readFromFile( fileName ):
+
     data = np.genfromtxt(fileName, dtype=np.float)
     lenRow = len(data[0]) -1
 

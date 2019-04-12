@@ -9,7 +9,9 @@ if len(sys.argv) < 3:
 
 #Training Data
 
+
 (x,y) = u.readFromFile(sys.argv[1])
+
 
 xPrime = u.calcXPrime(x)
 
@@ -26,7 +28,9 @@ print(trainASE)
 
 #Testing data
 
+
 (xTest, yTest) = u.readFromFile(sys.argv[2])
+
 
 xTestPrime = u.calcXPrime(xTest)
 testASE = u.calcASE(wPrime, xTestPrime, yTest)
