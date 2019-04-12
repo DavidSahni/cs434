@@ -10,9 +10,8 @@ if len(sys.argv) < 3:
 print("Running tests with the removed dummy data")
 
 #Training Data
-train = np.genfromtxt(sys.argv[1], dtype=np.float)
 
-(x,y) = u.readFromFile(train)
+(x,y) = u.readFromFile(sys.argv[1])
 
 #calculate learned weight
 w = u.calcLearnedWeight(x, y)

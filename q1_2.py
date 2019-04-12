@@ -8,9 +8,8 @@ if len(sys.argv) < 3:
     sys.exit("give the housing data .txt files next time!")
 
 #Training Data
-train = np.genfromtxt(sys.argv[1], dtype=np.float)
 
-(x,y) = u.readFromFile(train)
+(x,y) = u.readFromFile(sys.argv[1])
 
 xPrime = u.calcXPrime(x)
 
@@ -26,9 +25,8 @@ print("ASE for training data:")
 print(trainASE)
 
 #Testing data
-test = np.genfromtxt(sys.argv[2], dtype=np.float)
 
-(xTest, yTest) = u.readFromFile(test)
+(xTest, yTest) = u.readFromFile(sys.argv[2])
 
 xTestPrime = u.calcXPrime(xTest)
 testASE = u.calcASE(wPrime, xTestPrime, yTest)
