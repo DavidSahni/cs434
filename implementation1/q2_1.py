@@ -40,5 +40,6 @@ for i in range(1, numberOfDataPoints + 1):
     prediction = calculateBatchPrediction(weightsDelta, xFeatures)
     weightsDelta = weightsDelta + ((prediction - yClasses[i]) * xFeatures[i])
 weights = weights - weightsDelta
+# Turns out the n (eta) is actually the learning rate
 
 print(str(weights))
