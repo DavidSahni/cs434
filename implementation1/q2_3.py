@@ -6,7 +6,6 @@ import csv
 import matplotlib.pyplot as plt
 
 def caclulatePrediction(wDelta, xFeatures):
-
     # To do, complete this function
     #wtx = np.matmul(-wPrime, xFeatures)
     yhat = 1.0/(1.0+np.exp((-1.0*np.dot(np.transpose(wDelta),xFeatures))))
@@ -14,7 +13,6 @@ def caclulatePrediction(wDelta, xFeatures):
         pass
         #print(yhat)
     return yhat
-
 
 def plotAccuracies(r, trainAcc, testAcc):
     plt.figure(1)
@@ -31,27 +29,21 @@ def plotAccuracies(r, trainAcc, testAcc):
     plt.xscale("log")
     plt.show()
 
-
 def calcRegBatch(xFeatures, yClasses, lRate, learnTo, xT, yT, lambdas):
     numberOfFeats = np.size(xFeatures, axis=1)
     numberOfDataPoints = np.size(xFeatures, axis=0)
-
-
     trainAcc = []
     testAcc = []
+    
     for k in lambdas:
-
         weights = np.zeros(numberOfFeats, dtype=float)
         for j in range(learnTo):
-
             weightsDelta = np.zeros(numberOfFeats, dtype=np.float)
             for i in range(numberOfDataPoints):
-                
                 prediction = caclulatePrediction(weights, xFeatures[i])
                 predDelta = prediction - yClasses[i]
             # printd(preDelta)
                 newDelta = (predDelta * xFeatures[i]) + k * weights
-
                 weightsDelta = weightsDelta + newDelta
             weights = weights - (lRate* weightsDelta)
         trainAcc.append(u.calcRegressionAcc(weights, xFeatures, yClasses))
@@ -59,26 +51,17 @@ def calcRegBatch(xFeatures, yClasses, lRate, learnTo, xT, yT, lambdas):
 
     return weights, trainAcc, testAcc
 
-
+### Main
 if(len(sys.argv) != 4):
     sys.exit("python q2_1.py usps-4-9-train.csv usps-4-9-test.csv lambaFile")
 
-
-
-
 (x,y) = u.readFromFile(sys.argv[1], ",")
-
 xT, yT = u.readFromFile(sys.argv[2],",")
-
-xTest= xT[:,:]/255.0
-
+xTest= xT[:,:] / 255.0
 xFeatures = x[:,:] / 255.0
 yClasses = y
 lRate = .000001
 learnTo = 80
 lambdas = np.genfromtxt(sys.argv[3])
-
 weightsL, trainAccL, testAccL  = calcRegBatch(xFeatures, yClasses, lRate, learnTo, xTest, yT, lambdas)
-
-
 plotAccuracies(lambdas, trainAccL, testAccL)
