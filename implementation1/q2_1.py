@@ -23,16 +23,17 @@ def caclulatePrediction(wDelta, xFeatures):
 
 
 
-def plotAccuracies(learnTo, trainAcc, testAcc):
+def plotAccuracies(r, trainAcc, testAcc):
     plt.figure(1)
     plt.subplot(111)
-    plt.plot(range(learnTo), trainAcc, label="Training")
+    plt.plot(r, trainAcc, label="Training")
     plt.ylabel("Accuracy")
     plt.xlabel("Batch Iterations")
 
-    plt.plot(range(learnTo), testAcc, label="Testing")
+    plt.plot(r, testAcc, label="Testing")
     plt.ylabel("Accuracy")
     plt.xlabel("Batch Iterations")
+    plt.legend()
     plt.show()
 
 
@@ -66,6 +67,7 @@ if(len(sys.argv) < 4):
 
 
 
+
 (x,y) = u.readFromFile(sys.argv[1], ",")
 
 xT, yT = u.readFromFile(sys.argv[2],",")
@@ -83,10 +85,13 @@ learnTo = 150
 
 
 
-weights, trainAcc, testAcc  = calcBatchWeights(xFeatures, yClasses, lRate, learnTo, xTest, yT)
+#weights, trainAcc, testAcc  = calcBatchWeights(xFeatures, yClasses, lRate, learnTo, xTest, yT)
 
-plotAccuracies(learnTo, trainAcc, testAcc)
-err = u.calcRegressionAcc(weights, xFeatures, yClasses)
-print(err)
+#plotAccuracies(range(learnTo), trainAcc, testAcc)
+
+weightsL, trainAccL, testAccL  = calcRegBatch(xFeatures, yClasses, lRate, learnTo, xTest, yT)
+plotAccuracies(range(-3, 3), trainAccL, testAccL)
+
+
 # Turns out the n (eta) is actually the learning rate
 
