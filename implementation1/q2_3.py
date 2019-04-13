@@ -35,13 +35,13 @@ def plotAccuracies(r, trainAcc, testAcc):
 def calcRegBatch(xFeatures, yClasses, lRate, learnTo, xT, yT, lambdas):
     numberOfFeats = np.size(xFeatures, axis=1)
     numberOfDataPoints = np.size(xFeatures, axis=0)
-    weights = np.zeros(numberOfFeats, dtype=float)
+
 
     trainAcc = []
     testAcc = []
     for k in lambdas:
-        trainAcc.append(u.calcRegressionAcc(weights, xFeatures, yClasses))
-        testAcc.append(u.calcRegressionAcc(weights,xT,yT))
+
+        weights = np.zeros(numberOfFeats, dtype=float)
         for j in range(learnTo):
 
             weightsDelta = np.zeros(numberOfFeats, dtype=np.float)
@@ -54,6 +54,8 @@ def calcRegBatch(xFeatures, yClasses, lRate, learnTo, xT, yT, lambdas):
 
                 weightsDelta = weightsDelta + newDelta
             weights = weights - (lRate* weightsDelta)
+        trainAcc.append(u.calcRegressionAcc(weights, xFeatures, yClasses))
+        testAcc.append(u.calcRegressionAcc(weights,xT,yT))
 
     return weights, trainAcc, testAcc
 
