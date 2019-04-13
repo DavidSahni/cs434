@@ -85,12 +85,10 @@ learnTo = 150
 
 
 
-#weights, trainAcc, testAcc  = calcBatchWeights(xFeatures, yClasses, lRate, learnTo, xTest, yT)
+weights, trainAcc, testAcc  = calcBatchWeights(xFeatures, yClasses, lRate, learnTo, xTest, yT)
 
-#plotAccuracies(range(learnTo), trainAcc, testAcc)
+plotAccuracies(range(learnTo), trainAcc, testAcc)
 
-weightsL, trainAccL, testAccL  = calcRegBatch(xFeatures, yClasses, lRate, learnTo, xTest, yT)
-plotAccuracies(range(-3, 3), trainAccL, testAccL)
 
 
 # Turns out the n (eta) is actually the learning rate
