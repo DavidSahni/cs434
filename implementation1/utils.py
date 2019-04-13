@@ -1,8 +1,8 @@
 import numpy as np
 
-def readFromFile( fileName ):
+def readFromFile( fileName , delim=None):
 
-    data = np.genfromtxt(fileName, dtype=np.float)
+    data = np.genfromtxt(fileName, dtype=np.float, delimiter=delim)
     lenRow = len(data[0]) -1
 
     y = data[:,lenRow]
@@ -39,3 +39,19 @@ def calcLearnedWeight(x, y):
     w2 = np.matmul(x.T, yPrime)
     w = np.matmul(w1, w2)
     return w
+
+def calcRegressionAcc(w, x, y):
+
+    correct = 0
+    for i in range(np.size(x,axis=0)):
+        yTrue = y[i]
+        wtx = np.dot(w.T, x[i])
+        yhat = 1.0/(1.0+np.exp(-wtx))
+        #print(yhat)
+        if yhat >= .5 and yTrue == 1:
+       # if wtx > 0 and yTrue is 1:
+            correct += 1
+        elif yhat < .5 and yTrue == 0:
+       # elif wtx <= 0 and yTrue is 0:
+            correct +=1
+    return correct/i

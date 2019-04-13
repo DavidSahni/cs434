@@ -2,6 +2,8 @@ import numpy as np  # Special array stuff.
 import sys          # Uses the command line to pass in values.
 import utils as u   # Customs utils script
 import csv
+import matplotlib.pyplot as plt
+
 
 def getRows(CSVPath):
     with open(CSVPath, newline='') as csvFile:
@@ -9,37 +11,82 @@ def getRows(CSVPath):
 
         return rowReader
 
-def calculateBatchPrediction(weights, xFeatures):
-    prediction = 0. # In the notes this will be y_hat
+def caclulatePrediction(wDelta, xFeatures):
 
     # To do, complete this function
-    # wtx = weights * xFeatures
-    # wtxSum = wtx.sum()
+    #wtx = np.matmul(-wPrime, xFeatures)
+    yhat = 1.0/(1.0+np.exp((-1.0*np.dot(np.transpose(wDelta),xFeatures))))
+    if (yhat != 1):
+        pass
+        #print(yhat)
+    return yhat
 
-    prediction = .5
 
-    return prediction
+
+def plotAccuracies(learnTo, trainAcc, testAcc):
+    plt.figure(1)
+    plt.subplot(111)
+    plt.plot(range(learnTo), trainAcc, label="Training")
+    plt.ylabel("Accuracy")
+    plt.xlabel("Batch Iterations")
+
+    plt.plot(range(learnTo), testAcc, label="Testing")
+    plt.ylabel("Accuracy")
+    plt.xlabel("Batch Iterations")
+    plt.show()
+
+
+def calcBatchWeights(xFeatures, yClasses, lRate, learnTo, xT, yT):
+
+    numberOfFeats = np.size(xFeatures, axis=1)
+    numberOfDataPoints = np.size(xFeatures, axis=0)
+    weights = np.zeros(numberOfFeats, dtype=float)
+
+    trainAcc = []
+    testAcc = []
+
+    for j in range(learnTo):
+        trainAcc.append(u.calcRegressionAcc(weights, xFeatures, yClasses))
+        testAcc.append(u.calcRegressionAcc(weights,xT,yT))
+        weightsDelta = np.zeros(numberOfFeats, dtype=np.float)
+        for i in range(numberOfDataPoints):
+            
+            prediction = caclulatePrediction(weights, xFeatures[i])
+            preDelta = prediction - yClasses[i]
+        # print(preDelta)
+            newDelta = (preDelta * xFeatures[i])
+
+            weightsDelta = weightsDelta + newDelta
+        weights = weights - (lRate* weightsDelta)
+
+    return weights, trainAcc, testAcc
 
 if(len(sys.argv) < 4):
     sys.exit("python q2_1.py usps-4-9-train.csv usps-4-9-test.csv learningrate")
 
-csvList = getRows(sys.argv[1])
-train = np.array(csvList, dtype=np.float)
-(x,y) = u.readFromFile(train)
 
-xFeatures = x
+
+(x,y) = u.readFromFile(sys.argv[1], ",")
+
+xT, yT = u.readFromFile(sys.argv[2],",")
+
+xTest= xT[:,:]/255.0
+
+xFeatures = x[:,:] / 255.0
 yClasses = y
+lRate = float(sys.argv[3])
+learnTo = 150
 # Note that X is a list of features
 # Note that Y is a list of classes respective to X
 # I think the "epsilon" respresents learning rate
 
-numberOfDataPoints = len(xFeatures[0])
-weights = np.zeros(numberOfDataPoints)
-weightsDelta = np.zeros(numberOfDataPoints)
-for i in range(1, numberOfDataPoints + 1):
-    prediction = calculateBatchPrediction(weightsDelta, xFeatures)
-    weightsDelta = weightsDelta + ((prediction - yClasses[i]) * xFeatures[i])
-weights = weights - weightsDelta
+
+
+
+weights, trainAcc, testAcc  = calcBatchWeights(xFeatures, yClasses, lRate, learnTo, xTest, yT)
+
+plotAccuracies(learnTo, trainAcc, testAcc)
+err = u.calcRegressionAcc(weights, xFeatures, yClasses)
+print(err)
 # Turns out the n (eta) is actually the learning rate
 
-print(str(weights))

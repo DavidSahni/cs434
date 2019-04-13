@@ -27,9 +27,8 @@ print("ASE for training data w/o dummy data:")
 print(trainASE)
 
 #Testing data
-test = np.genfromtxt(sys.argv[2], dtype=np.float)
 
-(xTest, yTest) = u.readFromFile(test)
+(xTest, yTest) = u.readFromFile(sys.argv[2])
 
 testASE = u.calcASE(wPrime, xTest, yTest)
 print("ASE for testing data w/o dummy data:")
