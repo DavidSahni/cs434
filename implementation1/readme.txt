@@ -16,5 +16,5 @@ The first sections' scripts can be ran with:
     python q1_4.py housing_train.txt housing_test.txt
 
 The second sections' scripts can be ran with:
-    python q2_1.py usps_train.txt usps__test.txt learningrate
-    python q2_3.py usps_train.txt usps__test.txt lambdas
+    python q2_1.py usps-4-9-train.csv usps-4-9-test.csv .00001
+    python q2_3.py usps-4-9-train.csv usps-4-9-test.csv lambdas
