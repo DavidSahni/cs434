@@ -33,3 +33,14 @@ def predictPoint(k, featureList, exampleCancer):
     elif(malignantVotes > benignVotes):
         return 1
 
+
+# Is it worth using a k-d tree
+# Yeah, that'd be wise.
+# I found a nice library: scipy.spatial.KDTree
+
+# Some useful formulas
+# Given m = [m1, ..., mi] and n = [n1, ..., ni]
+# D(m, n) = ||m - n|| = sqrt((m - n)^T * (m - n))
+# S(m, n) = e^(-alpha * D(x, y))
+
+# k = "number of votes" cast by nearest points.
