@@ -33,6 +33,24 @@ def predictPoint(k, featureList, exampleCancer):
     elif(malignantVotes > benignVotes):
         return 1
 
+### Main
+
+trainFile = sys.argv[1]
+k = int(sys.argv[3])
+featureLists = getRows(trainFile)
+successCounter = 0
+errorCounter = 0
+for row in featureLists:
+    predication = predictPoint(k, featureLists, row)
+    actual = row[0]
+    if(predication == actual):
+        successCounter += 1
+    else:
+        errorCounter += 1
+print("Errors in Training Data: " + str(errorCounter))
+print("   Error rate: " + str(errorCounter / len(featureLists)))
+
+
 
 # Is it worth using a k-d tree
 # Yeah, that'd be wise.
