@@ -33,15 +33,15 @@ def predictPoint(k, featureList, exampleCancer):
         return 1
 
 ### Main
-
 trainFile = sys.argv[1]
+testFile = sys.argv[2]
 k = int(sys.argv[3])
 featureLists = getRows(trainFile)
 successCounter = 0
 errorCounter = 0
 for row in featureLists:
     predication = predictPoint(k, featureLists, row)
-    actual = row[0]
+    actual = int(row[0])
     if(predication == actual):
         successCounter += 1
     else:
