@@ -70,6 +70,18 @@ for cancerSample in testingCancerCellList:
     if(predication != actual):
         testingErrorCounter += 1
 
+# Use this when running q1.py on its own.
+print("(Cross validation is " + str(int(100 / crossValidationSize)) + "% of training data.)")
+print("Errors in training data: " + str(trainingErrorCounter) + " / " + str(len(trainingCancerCellList)))
+print("\tError rate: " + str(round(100. * trainingErrorCounter / len(trainingCancerCellList), 2)) + "%")
+print("Errors in cross validation: " + str(validationErrorCounter) + " / " + str(len(crossValidationCancerCells)))
+print("\tError rate: " + str(round(100. * validationErrorCounter / len(crossValidationCancerCells), 2)) + "%")
+print("Errors in testing data: " + str(testingErrorCounter) + " / " + str(len(testingCancerCellList)))
+print("\tError rate: " + str(round(100. * testingErrorCounter / len(testingCancerCellList), 2)) + "%")
+
+# Use this when running q1.py en masse
+# print(str(k) + "," + str(trainingErrorCounter) + "," + str(validationErrorCounter) + "," + str(testingErrorCounter))
+
 # Is it worth using a k-d tree?
 # Yeah, that'd be wise.
 # I found a nice library: scipy.spatial.KDTree
