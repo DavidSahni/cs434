@@ -52,6 +52,23 @@ crossValidationListSize = int(fullTrainingListSize / crossValidationSize)
 crossValidationCancerCells = trainingFeaturesLists[0:crossValidationListSize]
 trainingCancerCellList = trainingFeaturesLists[crossValidationListSize:fullTrainingListSize]
 
+for cancerSample in trainingCancerCellList:
+    predication = predictPoint(k, trainingCancerCellList, cancerSample)
+    actual = int(cancerSample[0])
+    if(predication != actual):
+        trainingErrorCounter += 1
+
+for cancerSample in crossValidationCancerCells:
+    predication = predictPoint(k, trainingCancerCellList, cancerSample)
+    actual = int(cancerSample[0])
+    if(predication != actual):
+        validationErrorCounter += 1
+
+for cancerSample in testingCancerCellList:
+    predication = predictPoint(k, trainingCancerCellList, cancerSample)
+    actual = int(cancerSample[0])
+    if(predication != actual):
+        testingErrorCounter += 1
 
 # Is it worth using a k-d tree?
 # Yeah, that'd be wise.
