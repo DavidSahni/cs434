@@ -46,12 +46,10 @@ for row in featureLists:
         successCounter += 1
     else:
         errorCounter += 1
-print("Errors in Training Data: " + str(errorCounter))
-print("   Error rate: " + str(errorCounter / len(featureLists)))
+print("Errors in Training Data: " + str(errorCounter) + " / " + str(len(featureLists)))
+print("\tError rate: " + str(round(100. * errorCounter / len(featureLists), 2)) + "%")
 
-
-
-# Is it worth using a k-d tree
+# Is it worth using a k-d tree?
 # Yeah, that'd be wise.
 # I found a nice library: scipy.spatial.KDTree
 
