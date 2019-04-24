@@ -1,6 +1,7 @@
 import sys
 import csv
 import math
+import random
 
 def getRows(CSVPath):
     with open(CSVPath, newline='') as csvFile:
@@ -33,21 +34,19 @@ def predictPoint(k, featureList, exampleCancer):
         return 1
 
 ### Main
+random.seed("implementation2")  # Seeding so we run the program multiple times, if needed.
 trainFile = sys.argv[1]
 testFile = sys.argv[2]
 k = int(sys.argv[3])
-featureLists = getRows(trainFile)
-successCounter = 0
-errorCounter = 0
-for row in featureLists:
-    predication = predictPoint(k, featureLists, row)
-    actual = int(row[0])
-    if(predication == actual):
-        successCounter += 1
-    else:
-        errorCounter += 1
-print("Errors in Training Data: " + str(errorCounter) + " / " + str(len(featureLists)))
-print("\tError rate: " + str(round(100. * errorCounter / len(featureLists), 2)) + "%")
+trainingFeaturesLists = getRows(trainFile)
+testingCancerCellList = getRows(testFile)
+random.shuffle(trainingFeaturesLists)
+# Basically 1/10 of cells saved in one list, 9/10s saved in another.
+fullTrainingListSize = len(trainingFeaturesLists)
+crossValidationListSize = int(fullTrainingListSize / crossValidationSize)
+crossValidationCancerCells = trainingFeaturesLists[0:crossValidationListSize]
+trainingCancerCellList = trainingFeaturesLists[crossValidationListSize:fullTrainingListSize]
+
 
 # Is it worth using a k-d tree?
 # Yeah, that'd be wise.
