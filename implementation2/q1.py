@@ -79,8 +79,7 @@ print("\tError rate: " + str(round(100. * validationErrorCounter / len(crossVali
 print("Errors in testing data: " + str(testingErrorCounter) + " / " + str(len(testingCancerCellList)))
 print("\tError rate: " + str(round(100. * testingErrorCounter / len(testingCancerCellList), 2)) + "%")
 
-# Use this when running q1.py en masse
-# print(str(k) + "," + str(trainingErrorCounter) + "," + str(validationErrorCounter) + "," + str(testingErrorCounter))
+# Use this when running q1.py en masse using knn.py
 
 # Is it worth using a k-d tree?
 # Yeah, that'd be wise.
