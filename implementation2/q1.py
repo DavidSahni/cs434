@@ -38,6 +38,11 @@ random.seed("implementation2")  # Seeding so we run the program multiple times, 
 trainFile = sys.argv[1]
 testFile = sys.argv[2]
 k = int(sys.argv[3])
+crossValidationSize = 10        # Constant, defined as "K" in (some) notes
+trainingErrorCounter = 0
+validationErrorCounter = 0
+testingErrorCounter = 0
+
 trainingFeaturesLists = getRows(trainFile)
 testingCancerCellList = getRows(testFile)
 random.shuffle(trainingFeaturesLists)
