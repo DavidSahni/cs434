@@ -12,6 +12,8 @@ class node:
     featureIdx = None
     iGain = 0
     direction = 0
+    childA = None
+    childB = None
 
     def __init__(self, idx=None, thold=None):
         self.threshold = thold
@@ -20,7 +22,7 @@ class node:
     def prettyPrint(self, cl=True):
         print("Test on X:", self.featureIdx)
         print("Threshold:", self.threshold)
-        print("Information Gain:", self.iGain)
+        print("Information Gain:", round(self.iGain,5))
         if cl:
             dirStr = "negative"
             if self.direction == POSRIGHT:
@@ -29,11 +31,12 @@ class node:
 
 
     def evalArray(self, data):
-        val = data[self.featureIdx]
-        eClass = 1 #assume its in the positive class
-        if val < self.threshold: #switch to neg class if below threshold
-            eClass = -1     #this assumes that pos class > threshold
-        eClass = eClass * self.direction #if direction is pos class < threshold, direction = -1
+        for row in data:
+            val = data[self.featureIdx]
+            eClass = 1 #assume its in the positive class
+            if val < self.threshold: #switch to neg class if below threshold
+                eClass = -1     #this assumes that pos class > threshold
+            eClass = eClass * self.direction #if direction is pos class < threshold, direction = -1
         return eClass
 
 def getClassCounts(data):
@@ -115,7 +118,7 @@ def findThreshold(data, featIdx, Hs):
 
 
 def findBestTestFromData(data):
-    (pos, neg) = getClassCounts(trainD)
+    (pos, neg) = getClassCounts(data)
     hs = calcEntropy(pos, neg)
     numFeats = np.shape(data)[1] #number of different features
     bestNode = node(0)
@@ -137,18 +140,50 @@ def runTest(data, nodeT):
             belowT = np.insert(belowT, np.shape(belowT)[0], row, axis=0)
         else:
             aboveT = np.insert(aboveT, np.shape(aboveT)[0], row, axis=0)
+    aboveT = aboveT[1:]
+    belowT = belowT[1:]
+    return aboveT, belowT
+
+def evalTest(aboveT, belowT, nodeT, train=False):
+    numwrong = 0
+    totalA = np.shape(aboveT)[0]
+    totalB = np.shape(belowT)[0]
+    correct = 1 * nodeT.direction
+    for row in aboveT:
+        if row[0] != correct:
+            numwrong += 1
+    aboveWrong = numwrong
+    correct *= -1
+    for row in belowT:
+        if row[0] != correct:
+            numwrong += 1
+    belowWrong = numwrong - aboveWrong
+    errpct = numwrong/(totalA+totalB)
+    print("Pct Error:", round(100*errpct, 3), "%")
+    if train:
+        print("Placed", totalA, "in positive class, misplaced:", aboveWrong, "(+{},-{})".format(totalA-aboveWrong, aboveWrong))
+        print("Placed", totalB, "in the negative class, misplaced:", belowWrong, "(+{},-{})".format(belowWrong, totalB-belowWrong))
 
 
-if len(sys.argv) < 3:
-    print("python q2_1.py train.csv test.csv")
-    sys.exit()
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("python q2_1.py train.csv test.csv")
+        sys.exit()
 
-trainFile = sys.argv[1]
-testFile = sys.argv[2]
+    trainFile = sys.argv[1]
+    testFile = sys.argv[2]
 
-trainD = np.genfromtxt(trainFile, dtype=np.float, delimiter=",")
-testD = np.genfromtxt(testFile, dtype=np.float, delimiter=",")
+    trainD = np.genfromtxt(trainFile, dtype=np.float, delimiter=",")
+    testD = np.genfromtxt(testFile, dtype=np.float, delimiter=",")
 
-bestNode = findBestTestFromData(trainD)
+    bestNode = findBestTestFromData(trainD)
 
-runTest(trainD, bestNode)
+    bestNode.prettyPrint()
+
+    aboveT, belowT = runTest(trainD, bestNode)
+    print("Training ", end="")
+    evalTest(aboveT, belowT, bestNode, True)
+
+    aboveT, belowT = runTest(testD, bestNode)
+    print("Testing ", end="")
+    evalTest(aboveT, belowT, bestNode)
