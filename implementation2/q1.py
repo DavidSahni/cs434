@@ -78,5 +78,10 @@ for cancerSample in testingCancerCellList:
 # Given m = [m1, ..., mi] and n = [n1, ..., ni]
 # D(m, n) = ||m - n|| = sqrt((m - n)^T * (m - n))
 # S(m, n) = e^(-alpha * D(x, y))
+# Not sure when to use S(m, n)... Isn't alpha = k in KNN, essentially?
 
 # k = "number of votes" cast by nearest points.
+# K = Number of equal parts with one part being used for cross validation.
+#   Why do both critically important numbers use K as their name with no other explanation?
+#   Why do both seem to be used interchangably within the notes and assignment prompt?
+#   For the lulz
