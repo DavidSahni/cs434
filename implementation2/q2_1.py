@@ -1,17 +1,17 @@
 import numpy as np  # Special array stuff.
 import sys          # Uses the command line to pass in values.
 import csv
-import matplotlib.pyplot as plt
 
-POSRIGHT = 1
-POSLEFT = -1
+POSCLS = 1
+NEGCLS = -1
 
 
 class node:
     threshold = None
     featureIdx = None
     iGain = 0
-    direction = 0
+    dA = 0
+    dB = 0
     childA = None
     childB = None
 
@@ -25,19 +25,16 @@ class node:
         print("Information Gain:", round(self.iGain,5))
         if cl:
             dirStr = "negative"
-            if self.direction == POSRIGHT:
+            if self.dA == POSCLS:
                 dirStr = "postive"
-            print("Values above the threshold are placed into the", dirStr, "class")
+            print("Values >= threshold placed in", dirStr, "class")
+            
+            dirStr = "negative"
+            if self.dB == POSCLS:
+                dirStr = "postive"
+            print("Values < threshold placed in", dirStr, "class")
 
 
-    def evalArray(self, data):
-        for row in data:
-            val = data[self.featureIdx]
-            eClass = 1 #assume its in the positive class
-            if val < self.threshold: #switch to neg class if below threshold
-                eClass = -1     #this assumes that pos class > threshold
-            eClass = eClass * self.direction #if direction is pos class < threshold, direction = -1
-        return eClass
 
 def getClassCounts(data):
     pos = 0
@@ -81,16 +78,15 @@ def calcInfGain(data, nodeT, Hs):
     
     Hs1 = calcEntropy(s1Pos, s1Neg)
     Hs2 = calcEntropy(s2Pos, s2Neg)
-    if Hs1 < Hs2:
-        if s1Pos > s1Neg: #values lower than thold in positive class
-            nodeT.direction = POSLEFT
-        else:
-            nodeT.direction = POSRIGHT
+
+    if s1Pos > s1Neg: #values lower than thold in positive class
+        nodeT.dB = POSCLS
     else:
-        if s2Pos >  s2Neg:
-            nodeT.direction = POSRIGHT
-        else:
-            nodeT.direction = POSLEFT
+        nodeT.dB = NEGCLS
+    if s2Pos >  s2Neg:
+        nodeT.dA = POSCLS
+    else:
+        nodeT.dA = NEGCLS
 
     iGain = Hs - ((s1Size/sSize) * Hs1) - ((s2Size/sSize) * Hs2)
     return iGain
@@ -104,12 +100,12 @@ def findThreshold(data, featIdx, Hs):
     numFeats = len(sArr)
     bestNode = node(featIdx)   
     for i in range(numFeats):
-        i2 = i-1
+        i2 = i+1
         test = False
-        if i2 >= 0:
+        if i2 < numFeats:
             test = (sArr[i][0] != sArr[i2][0])
         if test:
-            newNode = node(featIdx, sArr[i][1])
+            newNode = node(featIdx, sArr[i2][1])
             newNode.iGain = calcInfGain(data, newNode, Hs)
             if newNode.iGain > bestNode.iGain:
                 bestNode = newNode
@@ -119,14 +115,14 @@ def findThreshold(data, featIdx, Hs):
 
 def findBestTestFromData(data):
     (pos, neg) = getClassCounts(data)
+    #print(pos, neg)
     hs = calcEntropy(pos, neg)
     numFeats = np.shape(data)[1] #number of different features
-    bestNode = node(0)
+    bestNode = node()
     for i in range(1, numFeats): #the first index is the class
         newNode = findThreshold(data, i, hs)
         if newNode.iGain > bestNode.iGain:
             bestNode = newNode
-
     return bestNode
 
 
@@ -148,12 +144,12 @@ def evalTest(aboveT, belowT, nodeT, train=False):
     numwrong = 0
     totalA = np.shape(aboveT)[0]
     totalB = np.shape(belowT)[0]
-    correct = 1 * nodeT.direction
+    correct = nodeT.dA
     for row in aboveT:
         if row[0] != correct:
             numwrong += 1
     aboveWrong = numwrong
-    correct *= -1
+    correct = nodeT.dB
     for row in belowT:
         if row[0] != correct:
             numwrong += 1
