@@ -73,13 +73,16 @@ if __name__ == "__main__":
 
     trainErrArr = []
     testErrArr = []
-
+    print("D\tTraining Error\tTesting Error")
     for i in range(1, d+1):
         root = learnDecisionTree(trainD, i, 0)
         w, t = evalDecisionTree(trainD, root)
-        trainErrArr.append(round((w/t)*100, 4))
+        trE = round((w/t)*100, 4)
+        trainErrArr.append(trE)
         w, t = evalDecisionTree(testD, root)
-        testErrArr.append(round((w/t)*100, 4))
+        teE = round((w/t)*100, 4)
+        testErrArr.append(teE)
+        print("{}\t{}\t\t{}\t".format(i, trE, teE))
 
     plt.figure(1)
     plt.subplot(111)
