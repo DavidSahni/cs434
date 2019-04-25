@@ -62,6 +62,8 @@ testingErrorCounter = 0
 
 trainingFeaturesLists = getRows(trainFile)
 testingCancerCellList = getRows(testFile)
+normalizeList(trainingFeaturesLists)
+normalizeList(testingCancerCellList)
 random.shuffle(trainingFeaturesLists)
 # Basically 1/10 of cells saved in one list, 9/10s saved in another.
 fullTrainingListSize = len(trainingFeaturesLists)
