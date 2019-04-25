@@ -9,6 +9,23 @@ def getRows(CSVPath):
 
         return rowReader
 
+def normalizeList(cancerCellsList):
+    featureMinMax = []
+
+    for i in range(1, 31):
+        featureMin = 0.
+        featureMax = 0.
+        for cancerCell in cancerCellsList:
+            if(float(cancerCell[i]) < featureMin):
+                featureMin = float(cancerCell[i])
+            elif(float(cancerCell[i]) > featureMax):
+                featureMax = float(cancerCell[i])
+        featureMinMax.append((abs(featureMin), (featureMax - featureMin)))
+
+    for cancerCell in cancerCellsList:
+        for i in range(1, 31):
+            cancerCell[i] =	(featureMinMax[i-1][0] + float(cancerCell[i])) / featureMinMax[i-1][1]	
+
 def predictPoint(k, featureList, exampleCancer):
     sortDistanceList = []
     benignVotes = 0
