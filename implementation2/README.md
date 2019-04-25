@@ -33,3 +33,9 @@ By default, the verbose print statement is active.
 This script allows you to run q1.py multiple times for odd k's between 1 and 51.
 It is recommended that you comment out the verbose print statement and uncomment the lite statement.
 Results are available in knnErrors.csv.
+
+## Decision Tree
+
+Scripts include q2_1.py and q2_2.py  
+Run using commands specified in the assignment (they will also print usage statements)  
+**Note** q2_2.py depends on some functions from q2_1.py so please leave them in the same folder
