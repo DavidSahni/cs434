@@ -16,16 +16,15 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = x.view(-1, 3*32*32)
-        x = torch.sigmoid(self.fc1(x))
+        x = torch.relu(self.fc1(x))
         x = self.fc1_drop(x)
         return F.log_softmax(self.fc2(x), dim=1)
 
-def train(epoch, stopVal, log_interval=200):
+def train(epoch, log_interval=200):
     # Set model to training mode
     model.train()
     
     # Loop over each batch from the training set
-    i = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         # Copy data to GPU if needed
         data = data.to(device)
@@ -45,9 +44,6 @@ def train(epoch, stopVal, log_interval=200):
         
         # Update weights
         optimizer.step()
-        i+=1
-        if i > stopVal:
-            break
         
       #  if batch_idx % log_interval == 0:
             # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
@@ -57,15 +53,13 @@ def train(epoch, stopVal, log_interval=200):
 def validate(loss_vector, accuracy_vector):
     model.eval()
     val_loss, correct = 0, 0
-   # for i in range(4000, 5000):
-    #        data, target = train_loader.dataset[i]
     for data, target in validation_loader:
-            data = data.to(device)
-            target = target.to(device)
-            output = model(data)
-            val_loss += criterion(output, target).data.item()
-            pred = output.data.max(1)[1] # get the index of the max log-probability
-            correct += pred.eq(target.data).cpu().sum()
+        data = data.to(device)
+        target = target.to(device)
+        output = model(data)
+        val_loss += criterion(output, target).data.item()
+        pred = output.data.max(1)[1] # get the index of the max log-probability
+        correct += pred.eq(target.data).cpu().sum()
 
     val_loss /= len(validation_loader)
     loss_vector.append(val_loss)
@@ -101,7 +95,6 @@ def test():
 # else:
 #     device = torch.device('cpu')
 if __name__ == "__main__":
-
     device = torch.device('cpu')
     print('Using PyTorch version:', torch.__version__, ' Device:', device)
 
@@ -119,7 +112,7 @@ if __name__ == "__main__":
     testset = datasets.CIFAR10(root='./data', train=False,
                                         transform=transforms.ToTensor())
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                            shuffle=False, num_workers=2)
+                                            shuffle=False, num_workers = 2)
 
     classes = ('plane', 'car', 'bird', 'cat',
     'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -128,17 +121,16 @@ if __name__ == "__main__":
     lossVecs = []
     lrs = [.1, .01, .001, .0001]
     testAcc = (-1, -1)
-    stopVal = 40000/batch_size #only use 4 of the 5 batches for training
     for lr in lrs:
         model = Net().to(device)
         optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.5)
         criterion = nn.CrossEntropyLoss()
 
-        epochs = 2
+        epochs = 5
 
         lossv, accv = [], []
         for epoch in range(1, epochs + 1):
-            train(epoch, stopVal)
+            train(epoch)
             validate(lossv, accv)
         accVecs.append(accv)
         lossVecs.append(lossv)
