@@ -98,74 +98,74 @@ def test():
 #     device = torch.device('cuda')
 # else:
 #     device = torch.device('cpu')
-
-device = torch.device('cpu')
-print('Using PyTorch version:', torch.__version__, ' Device:', device)
-
-
-batch_size = 200
+if __name__ == "__main__":
+    device = torch.device('cpu')
+    print('Using PyTorch version:', torch.__version__, ' Device:', device)
 
 
-trainset = datasets.CIFAR10(root='./data', train=True, transform=transforms.ToTensor(), download=True)
-train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size)
-
-vset = datasets.CIFAR10(root='./data', train=False,
-                                       transform=transforms.ToTensor())
-validation_loader = torch.utils.data.DataLoader(vset, batch_size=batch_size)
-
-testset = datasets.CIFAR10(root='./data', train=False,
-                                       transform=transforms.ToTensor())
-testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                         shuffle=False)
-
-classes = ('plane', 'car', 'bird', 'cat',
-'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
-accVecs = []
-lossVecs = []
-lrs = [.1, .01, .001, .0001]
-testAcc = (-1, -1)
-for lr in lrs:
-    model = Net().to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.5)
-    criterion = nn.CrossEntropyLoss()
-
-    epochs = 5
-
-    lossv, accv = [], []
-    for epoch in range(1, epochs + 1):
-        train(epoch)
-        validate(lossv, accv)
-    accVecs.append(accv)
-    lossVecs.append(lossv)
-    loss, acc = test()
-    if acc > testAcc[0]:
-        testAcc = (acc, lr)
+    batch_size = 200
 
 
-print("Test Accuracy: {}\nLearning Rate Used: {}".format(testAcc[0], testAcc[1]))
+    trainset = datasets.CIFAR10(root='./data', train=True, transform=transforms.ToTensor(), download=True)
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, num_workers=2)
 
-plt.figure(figsize=(5,3))
-i = 0
-for vec in accVecs:
-    lblStr = "lr={}".format(lrs[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+= 1
-plt.title('Accuracy over epochs')
-plt.legend()
+    vset = datasets.CIFAR10(root='./data', train=False,
+                                        transform=transforms.ToTensor())
+    validation_loader = torch.utils.data.DataLoader(vset, batch_size=batch_size, num_workers=2)
 
-i=0
-plt.figure(figsize=(5,3))
-for vec in lossVecs:
-    lblStr = "lr={}".format(lrs[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+=1
-plt.legend()
+    testset = datasets.CIFAR10(root='./data', train=False,
+                                        transform=transforms.ToTensor())
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                            shuffle=False, num_workers=2)
 
-# plt.plot(np.arange(1,epochs+1), accv)
+    classes = ('plane', 'car', 'bird', 'cat',
+    'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-#plt.figure(figsize=(5,3))
-plt.title('Loss over epochs');
+    accVecs = []
+    lossVecs = []
+    lrs = [.1, .01, .001, .0001]
+    testAcc = (-1, -1)
+    for lr in lrs:
+        model = Net().to(device)
+        optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.5)
+        criterion = nn.CrossEntropyLoss()
 
-plt.show()
+        epochs = 5
+
+        lossv, accv = [], []
+        for epoch in range(1, epochs + 1):
+            train(epoch)
+            validate(lossv, accv)
+        accVecs.append(accv)
+        lossVecs.append(lossv)
+        loss, acc = test()
+        if acc > testAcc[0]:
+            testAcc = (acc, lr)
+
+
+    print("Test Accuracy: {}\nLearning Rate Used: {}".format(testAcc[0], testAcc[1]))
+
+    plt.figure(figsize=(5,3))
+    i = 0
+    for vec in accVecs:
+        lblStr = "lr={}".format(lrs[i])
+        plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+        i+= 1
+    plt.title('Accuracy over epochs')
+    plt.legend()
+
+    i=0
+    plt.figure(figsize=(5,3))
+    for vec in lossVecs:
+        lblStr = "lr={}".format(lrs[i])
+        plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+        i+=1
+    plt.legend()
+
+    # plt.plot(np.arange(1,epochs+1), accv)
+
+    #plt.figure(figsize=(5,3))
+    plt.title('Loss over epochs');
+
+    plt.show()
 
