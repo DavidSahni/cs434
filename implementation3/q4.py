@@ -7,22 +7,30 @@ from torchvision import datasets, transforms
 import numpy as np
 import matplotlib.pyplot as plt
 
-class Net(nn.Module):
+class Net2(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
+        super(Net2, self).__init__()
         self.fc1 = nn.Linear(3*32*32, 50)
-        self.fc1_drop = nn.Dropout(0.2)
         self.fc2 = nn.Linear(50, 50)
-        self.fc2_drop = nn.Dropout(0.2)
         self.fc3 = nn.Linear(50, 10)
 
     def forward(self, x):
         x = x.view(-1, 3*32*32)
         x = torch.relu(self.fc1(x))
-        x = self.fc1_drop(x)
         x = torch.relu(self.fc2(x))
-        x = self.fc2_drop(x)
         return F.log_softmax(self.fc3(x), dim=1)
+
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(3*32*32, 50)
+        self.fc2 = nn.Linear(50, 10)
+
+    def forward(self, x):
+        x = x.view(-1, 3*32*32)
+        x = torch.relu(self.fc1(x))
+        return F.log_softmax(self.fc2(x), dim=1)
 
 def train(epoch, log_interval=200):
     # Set model to training mode
@@ -86,12 +94,31 @@ def test():
         pred = output.data.max(1)[1] # get the index of the max log-probability
         correct += pred.eq(target.data).cpu().sum()
 
-    val_loss /= len(validation_loader)
+    val_loss /= len(testloader)
 
-    accuracy = 100. * correct.to(torch.float32) / len(validation_loader.dataset)
+    accuracy = 100. * correct.to(torch.float32) / len(testloader.dataset)
     
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        val_loss, correct, len(validation_loader.dataset), accuracy))
+        val_loss, correct, len(testloader.dataset), accuracy))
+    return val_loss, accuracy
+
+def TrainEval():
+    model.eval()
+    val_loss, correct = 0, 0
+    for data, target in train_loader:
+        data = data.to(device)
+        target = target.to(device)
+        output = model(data)
+        val_loss += criterion(output, target).data.item()
+        pred = output.data.max(1)[1] # get the index of the max log-probability
+        correct += pred.eq(target.data).cpu().sum()
+
+    val_loss /= len(train_loader)
+
+    accuracy = 100. * correct.to(torch.float32) / len(train_loader.dataset)
+    
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        val_loss, correct, len(train_loader.dataset), accuracy))
     return val_loss, accuracy
 
 # if torch.cuda.is_available():
@@ -121,51 +148,55 @@ if __name__ == "__main__":
     classes = ('plane', 'car', 'bird', 'cat',
     'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-    accVecs = []
-    lossVecs = []
-    lrs = [.1, .01, .001, .0001]
-    testAcc = (-1, -1)
-    for lr in lrs:
-        model = Net().to(device)
-        optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.5)
-        criterion = nn.CrossEntropyLoss()
+    epochs = 15
 
-        epochs = 5
+    model = Net().to(device)
+    optimizer = torch.optim.SGD(model.parameters(), lr=.1, momentum=0.5)
+    criterion = nn.CrossEntropyLoss()
 
-        lossv, accv = [], []
-        for epoch in range(1, epochs + 1):
-            train(epoch)
-            validate(lossv, accv)
-        accVecs.append(accv)
-        lossVecs.append(lossv)
-        loss, acc = test()
-        if acc > testAcc[0]:
-            testAcc = (acc, lr)
-
-
-    print("Test Accuracy: {}\nLearning Rate Used: {}".format(testAcc[0], testAcc[1]))
+    lossv, accv = [], []
+    for epoch in range(1, epochs + 1):
+        train(epoch)
+        validate(lossv, accv)
+    tLoss, trAcc = TrainEval()
+    loss, acc = test()
 
     plt.figure(figsize=(5,3))
-    i = 0
-    for vec in accVecs:
-        lblStr = "lr={}".format(lrs[i])
-        plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-        i+= 1
-    plt.title('Accuracy over epochs')
-    plt.legend()
+   # lblStr = "lr={}".format(lrs[i])
+    plt.plot(np.arange(1,epochs+1), accv, marker='o')
+    plt.title('2 Layer: Accuracy')
 
-    i=0
     plt.figure(figsize=(5,3))
-    for vec in lossVecs:
-        lblStr = "lr={}".format(lrs[i])
-        plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-        i+=1
-    plt.legend()
+    plt.plot(np.arange(1,epochs+1), lossv, marker='o', color='red')
 
-    # plt.plot(np.arange(1,epochs+1), accv)
+    plt.title('2 Layer: Loss');
 
-    #plt.figure(figsize=(5,3))
-    plt.title('Loss over epochs');
+
+    model = Net2().to(device)
+    optimizer = torch.optim.SGD(model.parameters(), lr=.1, momentum=0.5)
+    criterion = nn.CrossEntropyLoss()
+
+    lossv3, accv3 = [], []
+    for epoch in range(1, epochs + 1):
+        train(epoch)
+        validate(lossv3, accv3)
+    tLoss3, trAcc3 = TrainEval()
+    loss3, acc3 = test()
+
+    plt.figure(figsize=(5,3))
+   # lblStr = "lr={}".format(lrs[i])
+    plt.plot(np.arange(1,epochs+1), accv3, marker='o')
+    plt.title('3 Layer: Accuracy')
+
+    plt.figure(figsize=(5,3))
+    plt.plot(np.arange(1,epochs+1), lossv3, marker='o', color='red')
+
+    plt.title('3 Layer: Loss');
+
+    print("2 Layer Accuracies:\n Train: {}\tTest: {}".format(trAcc, acc))
+    print("3 Layer Accuracies:\n Train: {}\tTest: {}".format(trAcc3, acc3))
+
+
 
     plt.show()
 
