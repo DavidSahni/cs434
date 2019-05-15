@@ -149,8 +149,8 @@ lossVecs = []
 testAccList = []
 epochs = 10
 dropOuts = [0., 0.2, 0.4, 0.6, 0.8]
-momentums = [0, 0.5, 1., 1.5, 2.]
-weightDecays = [0, 0.5, 1., 1.5, 2.]
+momentums = [0.3, 0.4, 0.5, 0.6, 0.7]
+weightDecays = [0, 0.02, 0.04, 0.06, 0.08]
 
 
 ##### Drop Outs
@@ -271,7 +271,7 @@ plt.legend()
 plt.figure(figsize=(5,3))
 i = 0
 for vec in lossVecs:
-    lblStr = "Drop Out = {}".format(weightDecays[i])
+    lblStr = "Weight Decay = {}".format(weightDecays[i])
     plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
     i+=1
 plt.xlabel("Epochs")
