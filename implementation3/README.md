@@ -15,21 +15,24 @@
 ```bash
 python q1.py
 ```
+
 Outputs the graphs for the accuracy and loss of different learning weights
+
 #### Q2
 
 ```bash
 python q2.py
 ```
+
 Outputs the graphs for the accuracy and loss of different learning weights with Relu activation function
 
 #### Q3
 
-Outputs 9 graphs for varying drop outs, momentums, and weight decays.
-
 ```bash
 python q3.py
 ```
+
+Outputs 9 graphs for varying drop outs, momentums, and weight decays.
 
 #### Q4
 
