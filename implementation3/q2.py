@@ -126,7 +126,7 @@ if __name__ == "__main__":
         optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.5)
         criterion = nn.CrossEntropyLoss()
 
-        epochs = 5
+        epochs = 10
 
         lossv, accv = [], []
         for epoch in range(1, epochs + 1):

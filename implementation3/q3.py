@@ -131,166 +131,166 @@ def createNeuralNetwork(dropOut=0.2, momentum=0.5, weightDecay=0.):
     # print(str(round(testAcc[0], 2) + "%,"))
 
     return accv, lossv, acc
+if __name__ == "__main__":
+    ### Main
+    device = torch.device('cpu')
+    # print('Using PyTorch version:', torch.__version__, ' Device:', device)
+    batch_size = 200
+    trainset = datasets.CIFAR10(root='./data', train=True, transform=transforms.ToTensor(), download=True)
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, num_workers=2)
+    vset = datasets.CIFAR10(root='./data', train=False, transform=transforms.ToTensor())
+    validation_loader = torch.utils.data.DataLoader(vset, batch_size=batch_size, num_workers=2)
+    testset = datasets.CIFAR10(root='./data', train=False, transform=transforms.ToTensor())
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-### Main
-device = torch.device('cpu')
-# print('Using PyTorch version:', torch.__version__, ' Device:', device)
-batch_size = 200
-trainset = datasets.CIFAR10(root='./data', train=True, transform=transforms.ToTensor(), download=True)
-train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, num_workers=2)
-vset = datasets.CIFAR10(root='./data', train=False, transform=transforms.ToTensor())
-validation_loader = torch.utils.data.DataLoader(vset, batch_size=batch_size, num_workers=2)
-testset = datasets.CIFAR10(root='./data', train=False, transform=transforms.ToTensor())
-testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
-classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
-accVecs = []
-lossVecs = []
-testAccList = []
-epochs = 10
-dropOuts = [0., 0.2, 0.4, 0.6, 0.8]
-momentums = [0, 0.5, 1., 1.5, 2.]
-weightDecays = [0, 0.5, 1., 1.5, 2.]
-
-
-##### Drop Outs
+    accVecs = []
+    lossVecs = []
+    testAccList = []
+    epochs = 10
+    dropOuts = [0., 0.2, 0.4, 0.6, 0.8]
+    momentums = [.3, 0.4, .5, .6, .7]
+    weightDecays = [0, 0.5, 1., 1.5, 2.]
 
 
-for dropOut in dropOuts:
-    accv, lossv, testAcc = createNeuralNetwork(dropOut=dropOut)
-    accVecs.append(accv)
-    lossVecs.append(lossv)
-    testAccList.append(testAcc)
+    ##### Drop Outs
+    
 
-plt.figure(figsize=(5,3))
-i = 0
-for vec in accVecs:
-    lblStr = "Drop Out = {}".format(dropOuts[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+= 1
-plt.xlabel("Epochs")
-plt.ylabel("Validation Accuracy")
-plt.title('Validation Accuracy over Epochs')
-plt.legend()
+    # for dropOut in dropOuts:
+    #     accv, lossv, testAcc = createNeuralNetwork(dropOut=dropOut)
+    #     accVecs.append(accv)
+    #     lossVecs.append(lossv)
+    #     testAccList.append(testAcc)
 
-
-plt.figure(figsize=(5,3))
-i = 0
-for vec in lossVecs:
-    lblStr = "Drop Out = {}".format(dropOuts[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+=1
-plt.xlabel("Epochs")
-plt.ylabel("Training Loss")
-plt.title('Training Loss over Epochs');
-plt.legend()
+    # plt.figure(figsize=(5,3))
+    # i = 0
+    # for vec in accVecs:
+    #     lblStr = "Drop Out = {}".format(dropOuts[i])
+    #     plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+    #     i+= 1
+    # plt.xlabel("Epochs")
+    # plt.ylabel("Validation Accuracy")
+    # plt.title('Validation Accuracy over Epochs')
+    # plt.legend()
 
 
-plt.figure(figsize=(5,3))
-plt.plot(dropOuts, testAccList, marker='o')
-plt.xlabel("Drop Outs")
-plt.ylabel("Total Accuracy")
-plt.title('Total Accuracy over Drop Outs');
+    # plt.figure(figsize=(5,3))
+    # i = 0
+    # for vec in lossVecs:
+    #     lblStr = "Drop Out = {}".format(dropOuts[i])
+    #     plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+    #     i+=1
+    # plt.xlabel("Epochs")
+    # plt.ylabel("Training Loss")
+    # plt.title('Training Loss over Epochs');
+    # plt.legend()
 
 
-print("Drop Outs Complete")
+    # plt.figure(figsize=(5,3))
+    # plt.plot(dropOuts, testAccList, marker='o')
+    # plt.xlabel("Drop Outs")
+    # plt.ylabel("Total Accuracy")
+    # plt.title('Total Accuracy over Drop Outs');
 
 
-##### Momentums
-
-accVecs = []
-lossVecs = []
-testAccList = []
-
-for momentum in momentums:
-    accv, lossv, testAcc = createNeuralNetwork(momentum=momentum)
-    accVecs.append(accv)
-    lossVecs.append(lossv)
-    testAccList.append(testAcc)
-
-plt.figure(figsize=(5,3))
-i = 0
-for vec in accVecs:
-    lblStr = "Momentum = {}".format(momentums[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+= 1
-plt.xlabel("Epochs")
-plt.ylabel("Validation Accuracy")
-plt.title('Validation Accuracy over Epochs')
-plt.legend()
+    # print("Drop Outs Complete")
 
 
-plt.figure(figsize=(5,3))
-i = 0
-for vec in lossVecs:
-    lblStr = "Momentum = {}".format(momentums[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+=1
-plt.xlabel("Epochs")
-plt.ylabel("Training Loss")
-plt.title('Training Loss over Epochs');
-plt.legend()
+    ##### Momentums
+
+    accVecs = []
+    lossVecs = []
+    testAccList = []
+
+    for momentum in momentums:
+        accv, lossv, testAcc = createNeuralNetwork(momentum=momentum)
+        accVecs.append(accv)
+        lossVecs.append(lossv)
+        testAccList.append(testAcc)
+
+    plt.figure(figsize=(5,3))
+    i = 0
+    for vec in accVecs:
+        lblStr = "Momentum = {}".format(momentums[i])
+        plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+        i+= 1
+    plt.xlabel("Epochs")
+    plt.ylabel("Validation Accuracy")
+    plt.title('Validation Accuracy over Epochs')
+    plt.legend()
 
 
-plt.figure(figsize=(5,3))
-plt.plot(momentums, testAccList, marker='o')
-plt.xlabel("Momentums")
-plt.ylabel("Total Accuracy")
-plt.title('Total Accuracy over Momentums');
+    plt.figure(figsize=(5,3))
+    i = 0
+    for vec in lossVecs:
+        lblStr = "Momentum = {}".format(momentums[i])
+        plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+        i+=1
+    plt.xlabel("Epochs")
+    plt.ylabel("Training Loss")
+    plt.title('Training Loss over Epochs');
+    plt.legend()
 
 
-print("Momentums Complete")
+    plt.figure(figsize=(5,3))
+    plt.plot(momentums, testAccList, marker='o')
+    plt.xlabel("Momentums")
+    plt.ylabel("Total Accuracy")
+    plt.title('Total Accuracy over Momentums');
 
 
-##### Weight Decay
+    print("Momentums Complete")
 
 
-accVecs = []
-lossVecs = []
-testAccList = []
+    ##### Weight Decay
 
 
-for weightDecay in weightDecays:
-    accv, lossv, testAcc = createNeuralNetwork(weightDecay=weightDecay)
-    accVecs.append(accv)
-    lossVecs.append(lossv)
-    testAccList.append(testAcc)
-
-plt.figure(figsize=(5,3))
-i = 0
-for vec in accVecs:
-    lblStr = "Weight Decay = {}".format(weightDecays[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+= 1
-plt.xlabel("Epochs")
-plt.ylabel("Validation Accuracy")
-plt.title('Validation Accuracy over Epochs')
-plt.legend()
+    # accVecs = []
+    # lossVecs = []
+    # testAccList = []
 
 
-plt.figure(figsize=(5,3))
-i = 0
-for vec in lossVecs:
-    lblStr = "Drop Out = {}".format(weightDecays[i])
-    plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
-    i+=1
-plt.xlabel("Epochs")
-plt.ylabel("Training Loss")
-plt.title('Training Loss over Epochs');
-plt.legend()
+    # for weightDecay in weightDecays:
+    #     accv, lossv, testAcc = createNeuralNetwork(weightDecay=weightDecay)
+    #     accVecs.append(accv)
+    #     lossVecs.append(lossv)
+    #     testAccList.append(testAcc)
+
+    # plt.figure(figsize=(5,3))
+    # i = 0
+    # for vec in accVecs:
+    #     lblStr = "Weight Decay = {}".format(weightDecays[i])
+    #     plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+    #     i+= 1
+    # plt.xlabel("Epochs")
+    # plt.ylabel("Validation Accuracy")
+    # plt.title('Validation Accuracy over Epochs')
+    # plt.legend()
 
 
-plt.figure(figsize=(5,3))
-plt.plot(weightDecays, testAccList, marker='o')
-plt.xlabel("Weight Decays")
-plt.ylabel("Total Accuracy")
-plt.title('Total Accuracy over Weight Decays');
+    # plt.figure(figsize=(5,3))
+    # i = 0
+    # for vec in lossVecs:
+    #     lblStr = "Drop Out = {}".format(weightDecays[i])
+    #     plt.plot(np.arange(1,epochs+1), vec, label=lblStr, marker='o')
+    #     i+=1
+    # plt.xlabel("Epochs")
+    # plt.ylabel("Training Loss")
+    # plt.title('Training Loss over Epochs');
+    # plt.legend()
 
 
-print("Weight Decays Complete")
+    # plt.figure(figsize=(5,3))
+    # plt.plot(weightDecays, testAccList, marker='o')
+    # plt.xlabel("Weight Decays")
+    # plt.ylabel("Total Accuracy")
+    # plt.title('Total Accuracy over Weight Decays');
 
 
-##### Show Plots
+    # print("Weight Decays Complete")
 
 
-plt.show()
+    ##### Show Plots
+
+
+    plt.show()
