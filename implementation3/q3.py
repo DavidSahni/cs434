@@ -142,8 +142,7 @@ if __name__ == "__main__":
     validation_loader = torch.utils.data.DataLoader(vset, batch_size=batch_size, num_workers=2)
     testset = datasets.CIFAR10(root='./data', train=False, transform=transforms.ToTensor())
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'
     accVecs = []
     lossVecs = []
     testAccList = []
@@ -268,6 +267,7 @@ if __name__ == "__main__":
     # plt.legend()
 
 
+
     # plt.figure(figsize=(5,3))
     # i = 0
     # for vec in lossVecs:
@@ -278,6 +278,7 @@ if __name__ == "__main__":
     # plt.ylabel("Training Loss")
     # plt.title('Training Loss over Epochs');
     # plt.legend()
+
 
 
     # plt.figure(figsize=(5,3))
