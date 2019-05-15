@@ -115,7 +115,7 @@ def createNeuralNetwork(dropOut=0.2, momentum=0.5, weightDecay=0.):
     model = Net(dropOut).to(device)
     optimizer = torch.optim.SGD(model.parameters(), lr=.1, momentum=momentum, weight_decay=weightDecay)
     criterion = nn.CrossEntropyLoss()
-    epochs = 2
+    epochs = 10
     lossv, accv = [], []
     for epoch in range(1, epochs + 1):
         train(epoch, stopVal)
@@ -147,7 +147,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 accVecs = []
 lossVecs = []
 testAccList = []
-epochs = 2
+epochs = 10
 dropOuts = [0., 0.2, 0.4, 0.6, 0.8]
 momentums = [0, 0.5, 1., 1.5, 2.]
 weightDecays = [0, 0.5, 1., 1.5, 2.]
