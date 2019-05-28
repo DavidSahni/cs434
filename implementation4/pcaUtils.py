@@ -40,3 +40,4 @@ def getEigenValuesAndVectors(dataVector):
 
 # ### Resources
 # https://stackoverflow.com/questions/37976564/simple-plots-of-eigenvectors-for-sklearn-decomposition-pca
+# https://machinelearningmastery.com/introduction-to-eigendecomposition-eigenvalues-and-eigenvectors/
