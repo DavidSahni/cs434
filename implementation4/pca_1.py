@@ -5,7 +5,8 @@ dataPath = "p4-data.txt"
 
 myNpArray = pca.getNpArrayFromFile(dataPath)
 eigenValues, eigenVectors = pca.getEigenValuesAndVectors(myNpArray)
-np.sort(eigenValues)
+eigenValues = np.sort(eigenValues.astype(np.float))
+eigenValues = np.flip(eigenValues)
 
 i = 1
 for eigenValue in eigenValues[:10]:
