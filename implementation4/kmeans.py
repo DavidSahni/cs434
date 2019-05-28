@@ -1,17 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-from sklearn.cluster import KMeans #This does K-Means alg
 import random
 
 def initializeCenters(numClusters, data):
+    centersIndex = []
+    arrlen = len(data)
+    print(arrlen)
+    while (len(centersIndex) != numClusters):
+        checkCenter = random.randint(0, arrlen)
+        if checkCenter not in centersIndex:
+            centersIndex.append(checkCenter)
+
     centers = []
-    centers.append(random.choice(data))
-    for i in range(numClusters - 1):
-        newCenter = random.choice(data)
-        while (newCenter in centers):
-            newCenter = random.choice(data)
-        centers.append(newCenter)
+    for i in range(numClusters):
+        print(centersIndex[i])
+        centers.append(data[centersIndex[i]])
+    #centers.append(random.choice(data))
+    #for i in range(numClusters - 1):
+    #    newCenter = random.choice(data)
+    #    while newCenter in centers:
+    #        newCenter = random.choice(data)
+    #    centers.append(newCenter)
     print(len(centers))
     print(centers)
     return centers
@@ -19,11 +29,14 @@ def initializeCenters(numClusters, data):
 #returns index of closest cluster within centers
 def assignToCluster(centers, dataPoint):
     minCenter = 0
+    centerIndex = 0
     for c in centers:
         #changing data[x] & centers[c] to x & c resp. because python syntax is spooky. Same with c to centers.index(c)
         if np.linalg.norm(dataPoint - c) < np.linalg.norm(dataPoint - centers[minCenter]):
-            minCenter = centers.index(c)
-    print(minCenter)
+            print("new min center")
+            minCenter = centerIndex
+        centerIndex += 1
+    print("min center: ", minCenter)
     return minCenter
 
 #returns new center of given cluster
@@ -56,10 +69,11 @@ def plotSSE(sse):
 ####Starting algorithm
 
 numClusters = int(sys.argv[1])
-print("testing K-means with: [" , numClusters , "] clusters...")
+print("testing K-means with: \'" , numClusters , "\' clusters...")
 
-#data = np.genfromtxt("p4-data.txt", dtype=np.int, delimiter=None)
-data = [1, 2, 3, 4] #test to run data
+file = open("p4-data.txt", "r")
+data = np.genfromtxt(file, dtype=np.int, delimiter=",")
+#data = [1, 2, 3, 4] #test to run data
 
 #initialization
 centers = initializeCenters(numClusters, data)
@@ -68,12 +82,14 @@ centers = initializeCenters(numClusters, data)
 #Execute loop until convergence
 clusters = [[]] #clusters to which the data is assigned to. ##BUG: Need to create 2-D array within initial array size of k
 sseOfIteration = [] #holds the sse of each iteration
+iteration = 1
 while True:
     oldClusters = clusters
 
     #Assignment Step
     for x in data:
         clusterIndex = assignToCluster(centers, x) #returns index of closest cluster to data point
+        print("clusterIndex: " ,clusterIndex) #running into issue when clusterIndex is 1. Need clusters to have 2D array size of k
         clusters[clusterIndex].append(x) #add data to the closest cluster center
 
     #Update Step
@@ -82,11 +98,13 @@ while True:
 
     #Determine SSE
     sse = findSSE(numClusters, clusters, centers)
+    print("SSE for iteration " + iteration + ": " + sse)
     sseOfIteration.append(sse)
 
     #Determine Convergence (can be done before Update Step)
     if oldClusters == clusters:
         break; #Clusters haven't changed. Convergence reached
 
+    iteration += 1
 #Now Graph the SSE
 plotSSE(sseOfIteration)
