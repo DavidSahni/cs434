@@ -1,13 +1,12 @@
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 def plotSSE(sse, plotLabel, xLabel):
-    iterationList =  [(x + 1) for x in range(len(sse))]
-    plt.plot(iterationList, sse, label="SSE vs Iteration") #find how to count indexes of sse of x-axis
+    plt.plot(range(1, len(sse) + 1), sse, label="SSE vs Iteration") #find how to count indexes of sse of x-axis
     plt.ylabel("Sum of Squared Errors")
     plt.xlabel("Iteration")
     plt.legend()
-    plt.ylim(0, 1)
     plt.show()
 
 #p2_1:

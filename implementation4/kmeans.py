@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import random
+import copy
 
 def initializeCenters(numClusters, data):
     centersIndex = []
@@ -23,7 +24,7 @@ def initializeCenters(numClusters, data):
     #        newCenter = random.choice(data)
     #    centers.append(newCenter)
     print(len(centers))
-    print(centers)
+    #print(centers)
     return centers
 
 #returns index of closest cluster within centers
@@ -33,36 +34,34 @@ def assignToCluster(centers, dataPoint):
     for c in centers:
         #changing data[x] & centers[c] to x & c resp. because python syntax is spooky. Same with c to centers.index(c)
         if np.linalg.norm(dataPoint - c) < np.linalg.norm(dataPoint - centers[minCenter]):
-            print("new min center")
             minCenter = centerIndex
         centerIndex += 1
-    print("min center: ", minCenter)
     return minCenter
 
 #returns new center of given cluster
 def updateCenter(cluster):
-    absCluster = np.absolute(cluster)
-    clusterSum = np.sum(cluster)
-    return (clusterSum/absCluster)
+    clusterSum = np.sum(cluster, axis=0)
+    newCenter = clusterSum / np.size(cluster, axis=0)
+    return newCenter
 
 #returns sse of given clusters & centers of clusters
-def findSSE(numClusters, clusters, centers):
+def findSSE(numClusters, clusters, centers, data):
     sseClusters = []
     for j in range(numClusters):
         sseCurrentCluster = []
-        for i in clusters[j]:
-            sseCurrentCluster.append(np.square(np.linalg.norm(i - centers[j])))
+        clusterData = data[clusters[j]]
+        for row in clusterData:
+            sseCurrentCluster.append(np.square(np.linalg.norm(row - centers[j])))
         sseClusters.append(np.sum(sseCurrentCluster))
     sse = np.sum(sseClusters)
 
     return sse
 
 def plotSSE(sse):
-    plt.plot(len(sse), sse, label="SSE vs Iteration") #find how to count indexes of sse of x-axis
+    plt.plot(range(1, len(sse)+1), sse, label="SSE vs Iteration") #find how to count indexes of sse of x-axis
     plt.ylabel("Sum of Squared Errors")
     plt.xlabel("Iteration")
     plt.legend()
-    plt.ylim(0, 1)
     plt.show()
 
 
@@ -80,30 +79,38 @@ centers = initializeCenters(numClusters, data)
 
 
 #Execute loop until convergence
-clusters = [[]] #clusters to which the data is assigned to. ##BUG: Need to create 2-D array within initial array size of k
+clusters = {} #clusters to which the data is assigned to. ##BUG: Need to create 2-D array within initial array size of k
+for i in range(numClusters):
+    clusters[i] = []
 sseOfIteration = [] #holds the sse of each iteration
 iteration = 1
 while True:
-    oldClusters = clusters
-
+    oldClusters = copy.deepcopy(clusters)
+    for i in range(numClusters):
+        clusters[i] = []
     #Assignment Step
-    for x in data:
+    for i,x in enumerate(data):
         clusterIndex = assignToCluster(centers, x) #returns index of closest cluster to data point
-        print("clusterIndex: " ,clusterIndex) #running into issue when clusterIndex is 1. Need clusters to have 2D array size of k
-        clusters[clusterIndex].append(x) #add data to the closest cluster center
-
+        #print("clusterIndex: " ,clusterIndex) #running into issue when clusterIndex is 1. Need clusters to have 2D array size of k
+        #print(clusterIndex)
+        clusters[clusterIndex].append(i) #add data to the closest cluster center
     #Update Step
+    print(len(clusters[0]), len(clusters[1]))
+    if oldClusters == clusters:
+        print("breaking")
+        break
+
+    
     for j in range(numClusters):
-        centers[j] = updateCenter(clusters[j]) #returns new center of given cluster
+        centers[j] = updateCenter(data[clusters[j]]) #returns new center of given cluster
 
     #Determine SSE
-    sse = findSSE(numClusters, clusters, centers)
-    print("SSE for iteration " + iteration + ": " + sse)
+    sse = findSSE(numClusters, clusters, centers, data)
+    print("SSE for iteration " + str(iteration) + ": " + str(sse))
     sseOfIteration.append(sse)
 
     #Determine Convergence (can be done before Update Step)
-    if oldClusters == clusters:
-        break; #Clusters haven't changed. Convergence reached
+
 
     iteration += 1
 #Now Graph the SSE
