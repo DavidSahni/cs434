@@ -53,3 +53,4 @@ def graphVectorImage(imgVector, title):
 
 # ### Resources
 # https://stackoverflow.com/questions/37976564/simple-plots-of-eigenvectors-for-sklearn-decomposition-pca
+# https://machinelearningmastery.com/introduction-to-eigendecomposition-eigenvalues-and-eigenvectors/
