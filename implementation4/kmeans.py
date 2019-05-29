@@ -7,7 +7,6 @@ import copy
 def initializeCenters(numClusters, data):
     centersIndex = []
     arrlen = len(data)
-    print(arrlen)
     while (len(centersIndex) != numClusters):
         checkCenter = random.randint(0, arrlen)
         if checkCenter not in centersIndex:
@@ -15,7 +14,6 @@ def initializeCenters(numClusters, data):
 
     centers = []
     for i in range(numClusters):
-        print(centersIndex[i])
         centers.append(data[centersIndex[i]])
     #centers.append(random.choice(data))
     #for i in range(numClusters - 1):
@@ -23,7 +21,6 @@ def initializeCenters(numClusters, data):
     #    while newCenter in centers:
     #        newCenter = random.choice(data)
     #    centers.append(newCenter)
-    print(len(centers))
     #print(centers)
     return centers
 
@@ -65,53 +62,62 @@ def plotSSE(sse):
     plt.show()
 
 
-####Starting algorithm
+def runKmeans(data, numClusters, debug=True):
+    centers = initializeCenters(numClusters, data)
 
-numClusters = int(sys.argv[1])
-print("testing K-means with: \'" , numClusters , "\' clusters...")
-
-file = open("p4-data.txt", "r")
-data = np.genfromtxt(file, dtype=np.int, delimiter=",")
-#data = [1, 2, 3, 4] #test to run data
-
-#initialization
-centers = initializeCenters(numClusters, data)
-
-
-#Execute loop until convergence
-clusters = {} #clusters to which the data is assigned to. ##BUG: Need to create 2-D array within initial array size of k
-for i in range(numClusters):
-    clusters[i] = []
-sseOfIteration = [] #holds the sse of each iteration
-iteration = 1
-while True:
-    oldClusters = copy.deepcopy(clusters)
+    #Execute loop until convergence
+    clusters = {} #clusters to which the data is assigned to. ##BUG: Need to create 2-D array within initial array size of k
     for i in range(numClusters):
         clusters[i] = []
-    #Assignment Step
-    for i,x in enumerate(data):
-        clusterIndex = assignToCluster(centers, x) #returns index of closest cluster to data point
-        #print("clusterIndex: " ,clusterIndex) #running into issue when clusterIndex is 1. Need clusters to have 2D array size of k
-        #print(clusterIndex)
-        clusters[clusterIndex].append(i) #add data to the closest cluster center
-    #Update Step
-    print(len(clusters[0]), len(clusters[1]))
-    if oldClusters == clusters:
-        print("breaking")
-        break
-
-    
-    for j in range(numClusters):
-        centers[j] = updateCenter(data[clusters[j]]) #returns new center of given cluster
-
-    #Determine SSE
-    sse = findSSE(numClusters, clusters, centers, data)
-    print("SSE for iteration " + str(iteration) + ": " + str(sse))
-    sseOfIteration.append(sse)
-
-    #Determine Convergence (can be done before Update Step)
+    sseOfIteration = [] #holds the sse of each iteration
+    iteration = 1
+    while True:
+        #oldClusters = copy.deepcopy(clusters)
+        for i in range(numClusters):
+            clusters[i] = []
+        #Assignment Step
+        for i,x in enumerate(data):
+            clusterIndex = assignToCluster(centers, x) #returns index of closest cluster to data point
+            #print("clusterIndex: " ,clusterIndex) #running into issue when clusterIndex is 1. Need clusters to have 2D array size of k
+            #print(clusterIndex)
+            clusters[clusterIndex].append(i) #add data to the closest cluster center
+        #Update Step
+        # if oldClusters == clusters:
+        #     break
 
 
-    iteration += 1
-#Now Graph the SSE
-plotSSE(sseOfIteration)
+        breakIter = True        
+        for j in range(numClusters):
+            updatedCenter = updateCenter(data[clusters[j]])
+            if not np.array_equal(updatedCenter, centers[j]):
+                breakIter = False
+            centers[j] = updatedCenter  #returns new center of given cluster
+        
+        if breakIter:
+            break
+
+        #Determine SSE
+        sse = findSSE(numClusters, clusters, centers, data)
+        if debug:
+            print("iteration: {} SSE: {}".format(iteration, sse))
+        sseOfIteration.append(sse)
+
+        #Determine Convergence (can be done before Update Step)
+
+
+        iteration += 1
+    return sseOfIteration
+
+if __name__ == "__main__":
+    ####Starting algorithm
+
+    numClusters = int(sys.argv[1])
+    print("testing K-means with: \'" , numClusters , "\' clusters...")
+
+    file = open("p4-data.txt", "r")
+    data = np.genfromtxt(file, dtype=np.int, delimiter=",")
+    #data = [1, 2, 3, 4] #test to run data
+
+    #initialization
+    sseVals = runKmeans(data, numClusters)
+    #plotSSE(sseVals)
