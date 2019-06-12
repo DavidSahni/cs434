@@ -27,21 +27,24 @@ def getTestInputFunc(data):
         return dataset
     return input_fn
 
+stf = True
 
-
-numSteps = 200
+numSteps = 100
 trainFname = 'feature103_Train.txt'
 testFname = 'features103_Test.txt'
+outputFileName = 'output103_'
 if len(sys.argv) > 1:
-    if sys.argv[1] == 1:
+    if sys.argv[1] == '1':
         trainFname = 'featuresall_train.txt'
         testFname = 'featuresall_test.txt'
-        numSteps = 10
+        numSteps = 5
+        outputFileName = "outputAll_"
+        print("Using large dataset")
 
 tf.enable_eager_execution()
 
 tf.logging.set_verbosity(tf.logging.ERROR)
-tf.set_random_seed(123)
+tf.set_random_seed(142)
 
 # Load dataset.
 trainSet = pd.read_csv(trainFname,sep='\t')
@@ -53,7 +56,7 @@ ids = testSet.pop('#defLine')
 trainSet.pop('#defLine')
 ySet = trainSet.pop('class')
 
-xTrain, xTest, yTrain, yTest = skSplit(trainSet, ySet, test_size=.2, random_state=123)
+xTrain, xTest, yTrain, yTest = skSplit(trainSet, ySet, test_size=.2, random_state=2)
 
 fc = tf.feature_column
 
@@ -66,19 +69,21 @@ for feature_name in col_names:
 
 
 
-trainInputFunc = getInputFunc(xTrain, yTrain)
+trainInputFunc = getInputFunc(xTrain, yTrain, n_Epochs=numSteps)
 evalInput = getInputFunc(xTest, yTest, n_Epochs=1, shuffle=False)
 
 testInput = getTestInputFunc(testSet)
 
 
-n_batches = 1
-est = estimator.BoostedTreesClassifier(featColumns,
-                                          n_batches_per_layer=n_batches)
-print("Starting Training")
-est.train(trainInputFunc, steps=200)
+n_batches = 1#int(len(yTrain)/32)
+numExamples = len(yTrain)
 
-print("Completed {} steps of training".format(numSteps))
+est = estimator.BoostedTreesClassifier(featColumns,
+                                          n_batches_per_layer=n_batches, l2_regularization=.3)
+print("Starting Training")
+est.train(trainInputFunc)
+
+print("Completed {} epochs of training".format(numSteps))
 
 results = est.evaluate(evalInput)
 print('Accuracy : ', results['accuracy'])
@@ -89,8 +94,9 @@ for pred in preds:
     classPredictions.append(pred['class_ids'][0])
 
 timeStmp = datetime.datetime.today().strftime('%H_%M')
-fname = 'output_{}.txt'.format(timeStmp)
-with open(fname, 'w') as f:
-    for i, rnaID in enumerate(ids):
-        outputStr = "{}, {}\n".format(rnaID, classPredictions[i])
-        f.write(outputStr)
+fname = outputFileName + timeStmp
+if stf: 
+    with open(fname, 'w') as f:
+        for i, rnaID in enumerate(ids):
+            outputStr = "{}, {}\n".format(rnaID, classPredictions[i])
+            f.write(outputStr)
