@@ -5,6 +5,7 @@ import tensorflow.estimator as estimator
 import tensorflow as tf
 from sklearn.model_selection import train_test_split as skSplit
 import datetime
+import sys
 
 def getInputFunc(data, y, n_Epochs=None, shuffle=True):
     numExamples = len(yTrain)
@@ -26,14 +27,25 @@ def getTestInputFunc(data):
         return dataset
     return input_fn
 
+
+
+numSteps = 200
+trainFname = 'feature103_Train.txt'
+testFname = 'features103_Test.txt'
+if len(sys.argv) > 1:
+    if sys.argv[1] == 1:
+        trainFname = 'featuresall_train.txt'
+        testFname = 'featuresall_test.txt'
+        numSteps = 10
+
 tf.enable_eager_execution()
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 tf.set_random_seed(123)
 
 # Load dataset.
-trainSet = pd.read_csv('feature103_Train.txt',sep='\t')
-testSet = pd.read_csv('feature103_Train.txt',sep='\t')
+trainSet = pd.read_csv(trainFname,sep='\t')
+testSet = pd.read_csv(testFname,sep='\t')
 ids = testSet.pop('#defLine')
 
 #print(trainSet.shape)
@@ -66,7 +78,7 @@ est = estimator.BoostedTreesClassifier(featColumns,
 print("Starting Training")
 est.train(trainInputFunc, steps=200)
 
-print("Completed 200 steps of training")
+print("Completed {} steps of training".format(numSteps))
 
 results = est.evaluate(evalInput)
 print('Accuracy : ', results['accuracy'])
